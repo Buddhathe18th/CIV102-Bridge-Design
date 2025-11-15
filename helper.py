@@ -22,9 +22,10 @@ def cross_section_inputs():
         print(f"\n--- Rectangle {i+1} ---")
         width = float(input(f"Enter the width of rectangle {i+1}: "))
         height = float(input(f"Enter the height of rectangle {i+1}: "))
+        x_left = float(input(f"Enter the distance from the left edge for rectangle {i+1}: "))
         y_bottom = float(input(f"Enter the distance of the bottom edge of rectangle {i+1} from the bottom of the cross-section (assume bottom is zero): "))
-        rectangles.append({'width': width, 'height': height, 'y_bottom': y_bottom})
-       
+        rectangles.append({'width': width, 'height': height, 'x_left': x_left, 'y_bottom': y_bottom})
+
     yield_strength_comp = float(input("\nEnter the compressive strength of the material: "))
     yield_strength_tens = float(input("\nEnter the tensile strength of the material: "))
     return rectangles, yield_strength_comp, yield_strength_tens
@@ -138,19 +139,44 @@ def factor_of_safety(max_moment, I, height, c, yield_strength_comp, yield_streng
     return factor_of_safety_comp,factor_of_safety_tens
 
 
-def plot_diagram(x, y, title, ylabel):
-    """Plots the shear force or bending moment diagram."""
-    plt.figure(figsize=(10, 5))
-    plt.plot(x, y, label=ylabel)
-    plt.fill_between(x, y, alpha=0.2)
-    plt.title(title)
-    plt.xlabel("Position along beam")
-    plt.ylabel(ylabel)
-    plt.grid(True)
-    plt.axhline(0, color='black', linewidth=0.5)
-    plt.legend()
+def plot_cross_section(rectangles):
+    fig, ax = plt.subplots()
+    for rect in rectangles:
+        ax.add_patch(
+            plt.Rectangle((rect['x_left'], rect['y_bottom']), rect['width'], rect['height'],
+                          fill=True, edgecolor='black', alpha=0.5)
+        )
+    all_rights = [r['x_left'] + r['width'] for r in rectangles]
+    all_tops = [r['y_bottom'] + r['height'] for r in rectangles]
+    max_w = max(all_rights)
+    max_h = max(all_tops)
+    ax.set_xlim(0, max_w * 1.1)
+    ax.set_ylim(0, max_h * 1.1)
+    ax.set_aspect('equal')
+    plt.xlabel('Width (from left)')
+    plt.ylabel('Height (from bottom)')
+    plt.title('Cross Section')
     plt.show()
 
+def plot_cross_section(rectangles):
+    fig, ax = plt.subplots()
+    for rect in rectangles:
+        ax.add_patch(
+            plt.Rectangle((rect['x_left'], rect['y_bottom']), rect['width'], rect['height'],
+                          fill=True, edgecolor='black', alpha=0.5)
+        )
+    all_rights = [r['x_left'] + r['width'] for r in rectangles]
+    all_tops = [r['y_bottom'] + r['height'] for r in rectangles]
+    max_w = max(all_rights)
+    max_h = max(all_tops)
+    ax.set_xlim(0, max_w * 1.1)
+    ax.set_ylim(0, max_h * 1.1)
+    ax.set_aspect('equal')
+    plt.xlabel('Width (from left)')
+    plt.ylabel('Height (from bottom)')
+    plt.title('Cross Section')
+    plt.show()
+    
 def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height):    
     length, point_loads, udl = get_beam_and_load_inputs(weight, length, shift)
    

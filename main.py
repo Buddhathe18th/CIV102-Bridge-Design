@@ -6,6 +6,9 @@ LENGTH=1200
 
 if __name__ == "__main__":
     rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
+
+    plot_cross_section(rectangles)
+
     centroid_y, I, c, height = centroid_and_secondmoment(rectangles)
     
     print(f"\nFor the composite cross-section:")
