@@ -1,7 +1,7 @@
 from helper import *
 
 
-WEIGHT=400
+WEIGHT=452.2
 LENGTH=1200
 
 if __name__ == "__main__":
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     print(f"Max distance from centroid to outer fiber (c): {c:.2f}")
 
     with open("data.txt", 'w') as f:
-        f.write("Left Reaction\tRight Reaction\tFOS Comp.\tFOS Tens.\n")
+        f.write("Shift\tLeft Reaction\tRight Reaction\tFOS Comp.\tFOS Tens.\n")
         for i in range(344):
             f.write(main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height))
         f.close()
