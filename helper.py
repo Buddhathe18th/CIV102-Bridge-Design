@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def get_beam_and_load_inputs(weight,length,shift):
-    point_loads = [(weight/(3.35*2),shift),(weight/(3.35*2),176),(weight/(3.35*2),340),(weight/(3.35*2),516),(weight*1.35/(3.35*2),680),(weight*1.35/(3.35*2),856)]
+    point_loads = [(weight/(3.35*2),shift),(weight/(3.35*2),176+shift),(weight/(3.35*2),340+shift),(weight/(3.35*2),516+shift),(weight*1.35/(3.35*2),680+shift),(weight*1.35/(3.35*2),856+shift)]
     
     # TODO: Self Weight
     udl = []
@@ -50,17 +50,12 @@ def centroid_and_secondmoment(rectangles):
         d = centroid_local - centroid
        
         totalI += Ic + area * d**2
-       
-    min_y = min(rectangle['y_bottom'] for rectangle in rectangles)
-    max_y = max(rectangle['y_bottom'] + rectangle['height'] for rectangle in rectangles)
-    c = max(max_y - centroid, centroid - min_y)
 
     min_y = min(rectangle['y_bottom'] for rectangle in rectangles)
     max_y = max(rectangle['y_bottom'] + rectangle['height'] for rectangle in rectangles)
-    c = max(max_y - centroid, centroid - min_y)
     max_height = max_y - min_y
        
-    return centroid, totalI, c, max_height
+    return centroid, totalI, centroid, max_height
 
 def calculate_reactions(length, point_loads, udl):
 
@@ -182,7 +177,7 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
     print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
    
-    return f"{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n"
+    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n"
     # Plot diagrams
     # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
     # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
