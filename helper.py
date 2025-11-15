@@ -6,12 +6,12 @@ def get_beam_and_load_inputs(weight,length,shift):
     
     # TODO: Self Weight
     udl = []
-    num_udl = int(input("Enter the number of uniformly distributed loads: "))
-    for i in range(num_udl):
-        magnitude = float(input(f"Enter the magnitude of udl {i+1} (use negative for upward force): "))
-        startloc = float(input(f"Enter the start location of udl {i+1} from the left end: "))
-        endloc = float(input(f"Enter the end location of udl {i+1} from the left end: "))
-        udl.append((magnitude, startloc, endloc))
+    # num_udl = int(input("Enter the number of uniformly distributed loads: "))
+    # for i in range(num_udl):
+    #     magnitude = float(input(f"Enter the magnitude of udl {i+1} (use negative for upward force): "))
+    #     startloc = float(input(f"Enter the start location of udl {i+1} from the left end: "))
+    #     endloc = float(input(f"Enter the end location of udl {i+1} from the left end: "))
+    #     udl.append((magnitude, startloc, endloc))
        
     return length, point_loads, udl
 
@@ -156,15 +156,14 @@ def plot_diagram(x, y, title, ylabel):
     plt.legend()
     plt.show()
 
-def main(weight, length, shift):    
+def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height):    
     length, point_loads, udl = get_beam_and_load_inputs(weight, length, shift)
-    rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
    
     leftreaction, rightreaction = calculate_reactions(length, point_loads, udl)
     x_shear, V = shear_force(length, point_loads, udl, leftreaction)
     x_moment, M = bending_moment(x_shear, V)
    
-    centroid_y, I, c, height = centroid_and_secondmoment(rectangles)
+    
     
     max_abs_moment_pos = M[M > 0].max() if np.any(M > 0) else None
     max_abs_moment_neg = M[M < 0].max() if np.any(M < 0) else None
@@ -178,17 +177,15 @@ def main(weight, length, shift):
     print("\n--- Analysis Results ---")
     print(f"Reaction force at the left support: {leftreaction:.2f}")
     print(f"Reaction force at the right support: {rightreaction:.2f}")
-    print(f"\nFor the composite cross-section:")
-    print(f"Overall centroidal y-axis: {centroid_y:.2f}")
-    print(f"Second moment of area (I): {I:.2f}")
-    print(f"Max distance from centroid to outer fiber (c): {c:.2f}")
+    
     print(f"Maximum absolute bending moment: {max(max_abs_moment_pos,max_abs_moment_neg):.2f}")
     print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
     print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
    
+    return f"{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n"
     # Plot diagrams
-    plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
-    plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
+    # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
+    # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
 
 if __name__ == "__main__":
     print("Please note that it is crucial to enter all lengths in milimeters (mm) and all force magnitudes in Newtons to ensure correct calculation.")
