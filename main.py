@@ -1,4 +1,4 @@
-from helper import *
+from flexural_helper import *
 
 
 WEIGHT=452.2
@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     plot_cross_section(rectangles)
 
-    centroid_y, I, c, height = centroid_and_secondmoment(rectangles)
+    centroid_y, I, height = centroid_and_secondmoment(rectangles)
 
     print(f"\n\n\n\n\nFor the composite cross-section:")
     print(f"Overall centroidal y-axis: {centroid_y:.2f}")
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     with open("data.txt", 'w') as f:
         f.write("Shift\tLeft Reaction\tRight Reaction\tFOS Comp.\tFOS Tens.\n")
         for i in range(344):
-            string=main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height)
+            string=main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens, I, centroid_y, height)
             f.write(string)
             string=string.split("\t")
             if float(string[3])<fos_comp_min:
