@@ -138,7 +138,6 @@ def factor_of_safety(max_moment, I, height, c, yield_strength_comp, yield_streng
     
     return factor_of_safety_comp,factor_of_safety_tens
 
-
 def plot_cross_section(rectangles):
     fig, ax = plt.subplots()
     for rect in rectangles:
@@ -176,7 +175,7 @@ def plot_cross_section(rectangles):
     plt.ylabel('Height (from bottom)')
     plt.title('Cross Section')
     plt.show()
-    
+
 def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height):    
     length, point_loads, udl = get_beam_and_load_inputs(weight, length, shift)
    
@@ -195,13 +194,13 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     fos_c_neg, fos_t_neg = factor_of_safety(abs(max_abs_moment_neg), I, height, c, yield_strength_comp, yield_strength_tens)
 
    
-    print("\n--- Analysis Results ---")
-    print(f"Reaction force at the left support: {leftreaction:.2f}")
-    print(f"Reaction force at the right support: {rightreaction:.2f}")
+    # print("\n--- Analysis Results ---")
+    # print(f"Reaction force at the left support: {leftreaction:.2f}")
+    # print(f"Reaction force at the right support: {rightreaction:.2f}")
     
-    print(f"Maximum absolute bending moment: {max(max_abs_moment_pos,max_abs_moment_neg):.2f}")
-    print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
-    print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
+    # print(f"Maximum absolute bending moment: {max(max_abs_moment_pos,max_abs_moment_neg):.2f}")
+    # print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
+    # print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
    
     return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n"
     # Plot diagrams

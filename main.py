@@ -10,16 +10,28 @@ if __name__ == "__main__":
     plot_cross_section(rectangles)
 
     centroid_y, I, c, height = centroid_and_secondmoment(rectangles)
-    
+
     print(f"\nFor the composite cross-section:")
     print(f"Overall centroidal y-axis: {centroid_y:.2f}")
     print(f"Second moment of area (I): {I:.2f}")
     print(f"Max distance from centroid to outer fiber (c): {c:.2f}")
 
+    fos_tens_min=100000
+    fos_comp_min=100000
+
     with open("data.txt", 'w') as f:
         f.write("Shift\tLeft Reaction\tRight Reaction\tFOS Comp.\tFOS Tens.\n")
         for i in range(344):
-            f.write(main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height))
+            string=main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height)
+            f.write(string)
+            string=string.split("\t")
+            if float(string[3])<fos_comp_min:
+                fos_comp_min=float(string[3])
+            if float(string[4])<fos_tens_min:
+                fos_tens_min=float(string[4])
         f.close()
+
+    print(f"\nMinimum Factor of Safety in Compression over all load positions: {fos_comp_min}")
+    print(f"Minimum Factor of Safety in Tension over all load positions: {fos_tens_min}")
 
 
