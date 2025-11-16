@@ -56,7 +56,7 @@ def centroid_and_secondmoment(rectangles):
     max_y = max(rectangle['y_bottom'] + rectangle['height'] for rectangle in rectangles)
     max_height = max_y - min_y
        
-    return centroid, totalI, centroid, max_height
+    return centroid, totalI, max_height
 
 def calculate_reactions(length, point_loads, udl):
 
@@ -176,7 +176,9 @@ def plot_cross_section(rectangles):
     plt.title('Cross Section')
     plt.show()
 
-def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens,centroid_y, I, c, height):    
+# def shear_fos()
+
+def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens, I, c, height):    
     length, point_loads, udl = get_beam_and_load_inputs(weight, length, shift)
    
     leftreaction, rightreaction = calculate_reactions(length, point_loads, udl)
