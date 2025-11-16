@@ -3,6 +3,7 @@ from helper import *
 
 WEIGHT=452.2
 LENGTH=1200
+TARGET_FOS=2.0
 
 if __name__ == "__main__":
     rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
@@ -11,7 +12,7 @@ if __name__ == "__main__":
 
     centroid_y, I, c, height = centroid_and_secondmoment(rectangles)
 
-    print(f"\nFor the composite cross-section:")
+    print(f"\n\n\n\n\nFor the composite cross-section:")
     print(f"Overall centroidal y-axis: {centroid_y:.2f}")
     print(f"Second moment of area (I): {I:.2f}")
     print(f"Max distance from centroid to outer fiber (c): {c:.2f}")
@@ -33,5 +34,6 @@ if __name__ == "__main__":
 
     print(f"\nMinimum Factor of Safety in Compression over all load positions: {fos_comp_min}")
     print(f"Minimum Factor of Safety in Tension over all load positions: {fos_tens_min}")
-
+    
+    print("The maximum weight this design can carry is: " +str(WEIGHT*min(fos_comp_min/TARGET_FOS,fos_tens_min/TARGET_FOS)))
 
