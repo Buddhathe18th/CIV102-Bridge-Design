@@ -1,13 +1,16 @@
 from flexural_helper import *
-
+from shear_helper import *
 
 WEIGHT=452.2
 LENGTH=1200
 TARGET_FOS=2.0
+YIELD_STRENGTH_COMP=6  #MPa
+YIELD_STRENGTH_TENS=30  #MPa
+SHEAR_YIELD_STRENGTH=4  #MPa
 
 if __name__ == "__main__":
-    rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
-
+    rectangles = cross_section_inputs()
+    fos=[]
     plot_cross_section(rectangles)
 
     centroid_y, I, height = centroid_and_secondmoment(rectangles)
@@ -15,25 +18,29 @@ if __name__ == "__main__":
     print(f"\n\n\n\n\nFor the composite cross-section:")
     print(f"Overall centroidal y-axis: {centroid_y:.2f}")
     print(f"Second moment of area (I): {I:.2f}")
-    print(f"Max distance from centroid to outer fiber (c): {c:.2f}")
 
     fos_tens_min=100000
     fos_comp_min=100000
-
+    max_shear_force=0
     with open("data.txt", 'w') as f:
         f.write("Shift\tLeft Reaction\tRight Reaction\tFOS Comp.\tFOS Tens.\n")
         for i in range(344):
-            string=main(WEIGHT,LENGTH,i,rectangles, yield_strength_comp, yield_strength_tens, I, centroid_y, height)
+            string, shear_force=main(WEIGHT,LENGTH,i,rectangles, YIELD_STRENGTH_COMP, YIELD_STRENGTH_TENS, I, centroid_y, height)
             f.write(string)
             string=string.split("\t")
             if float(string[3])<fos_comp_min:
                 fos_comp_min=float(string[3])
             if float(string[4])<fos_tens_min:
                 fos_tens_min=float(string[4])
+            if shear_force>max_shear_force:
+                max_shear_force=shear_force
         f.close()
-
+    
+    tau, height, Q_val, b_val, heights, Q, width_list=shear_fos(max_shear_force, rectangles, centroid_y, I)
+    fos=[fos_comp_min,fos_tens_min,SHEAR_YIELD_STRENGTH/tau]
     print(f"\nMinimum Factor of Safety in Compression over all load positions: {fos_comp_min}")
     print(f"Minimum Factor of Safety in Tension over all load positions: {fos_tens_min}")
+    print(f"Minimum Factor of Safety in Shear over all load positions: {SHEAR_YIELD_STRENGTH/tau:.2f}")
     
-    print("The maximum weight this design can carry is: " +str(WEIGHT*min(fos_comp_min/TARGET_FOS,fos_tens_min/TARGET_FOS)))
+    print("The maximum weight this design can carry is: " +str(WEIGHT*min(i/TARGET_FOS for i in fos)))
 
