@@ -26,9 +26,7 @@ def cross_section_inputs():
         y_bottom = float(input(f"Enter the distance of the bottom edge of rectangle {i+1} from the bottom of the cross-section (assume bottom is zero): "))
         rectangles.append({'width': width, 'height': height, 'x_left': x_left, 'y_bottom': y_bottom})
 
-    yield_strength_comp = float(input("\nEnter the compressive strength of the material: "))
-    yield_strength_tens = float(input("\nEnter the tensile strength of the material: "))
-    return rectangles, yield_strength_comp, yield_strength_tens
+    return rectangles
 
 def centroid_and_secondmoment(rectangles):
     total_area = 0
@@ -186,7 +184,7 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     x_moment, M = bending_moment(x_shear, V)
    
     
-    
+    max_shear_force = max(abs(V))
     max_abs_moment_pos = M[M > 0].max() if np.any(M > 0) else None
     max_abs_moment_neg = M[M < 0].max() if np.any(M < 0) else None
 
@@ -204,7 +202,7 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     # print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
     # print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
    
-    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n"
+    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n",max_shear_force
     # Plot diagrams
     # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
     # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
