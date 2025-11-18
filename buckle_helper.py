@@ -1,6 +1,6 @@
 import math
 
-def buckle(E,poisson,I,current_moment):
+def buckle(E,poisson,I,current_moment,coefficient):
     case=input("case: ")
     fos=[]
     while case!="STOP":
@@ -23,7 +23,7 @@ def buckle(E,poisson,I,current_moment):
             fos.append(max_moment/current_moment)
         elif case==4:
             tau=5*math.pi**2*E/(12*(1-poisson**2))* ((t/b)**2 +(t/a)**2)
-            print(tau)
+            fos.append(tau/coefficient)
         case=input("case: ")
     return fos
 # buckle(4000,0.2,587*10**3)
