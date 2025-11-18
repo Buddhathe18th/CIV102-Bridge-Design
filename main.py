@@ -41,6 +41,9 @@ if __name__ == "__main__":
     print(f"\nMinimum Factor of Safety in Compression over all load positions: {fos_comp_min}")
     print(f"Minimum Factor of Safety in Tension over all load positions: {fos_tens_min}")
     print(f"Minimum Factor of Safety in Shear over all load positions: {SHEAR_YIELD_STRENGTH/tau:.2f}")
-    
+
     print("The maximum weight this design can carry is: " +str(WEIGHT*min(i/TARGET_FOS for i in fos)))
 
+
+    # print(shear_fos(200, rectangles, centroid_y, I))
+    # print(centroid_y,I)
