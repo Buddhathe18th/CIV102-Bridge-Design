@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     tau, height, Q_val, b_val, heights, Q, width_list=shear_fos(max_shear_force, rectangles, centroid_y, I)
     fos=[fos_comp_min,fos_tens_min,SHEAR_YIELD_STRENGTH/tau]
-    buckling=buckle(ELASTIC_MODULUS,POISSON_RATIO,I,max_moment)
+    buckling=buckle(ELASTIC_MODULUS,POISSON_RATIO,I,max_moment,max_shear_force*Q_val/(I*b_val))
     fos=fos+buckling
 
     print(f"\n\n\n\n\nFor the composite cross-section:")
@@ -55,7 +55,11 @@ if __name__ == "__main__":
 
     
     print(f"Minimum Factor of Safety in Buckling over all load positions: {min(buckling)}")
-
-    print("The maximum weight this design can carry is: " +str(WEIGHT*min(i/TARGET_FOS for i in fos)))
+    ratios = [val / TARGET_FOS for val in fos]
+    min_ratio = min(ratios)
+    min_index = ratios.index(min_ratio)
+    
+    print("The maximum weight this design can carry is: " +str(WEIGHT*min_ratio)+" for index ",min_index)
+    print(fos,tau)
 
 

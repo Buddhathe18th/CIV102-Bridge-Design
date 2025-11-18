@@ -64,6 +64,7 @@ def centroid_up_to_height(rectangles, h):
     centroid_y = area_moment_sum / total_area
     return centroid_y
 
+
 def shear_fos(maximum_shear_force, rectangles, centroid_y, I):
     min_y = min(rect['y_bottom'] for rect in rectangles)
     max_y = max(rect['y_bottom'] + rect['height'] for rect in rectangles)
