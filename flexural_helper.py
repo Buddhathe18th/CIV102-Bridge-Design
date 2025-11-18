@@ -202,7 +202,7 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     # print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
     # print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
    
-    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n",max_shear_force
+    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n",max_shear_force,max(max_abs_moment_pos,max_abs_moment_neg)
     # Plot diagrams
     # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
     # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
