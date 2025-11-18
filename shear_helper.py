@@ -101,9 +101,9 @@ def shear_fos(maximum_shear_force, rectangles, centroid_y, I):
     return tau, height, Q_val, b_val, heights, Q, width_list
 
 
-rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
-centroid_y, I, height = centroid_and_secondmoment(rectangles)
-tau, height, Q_val, b_val, heights, Q, width_list=shear_fos(1508/2, rectangles, centroid_y, I)
-print(tau,height, Q_val,b_val)
-print(width_list)
-plot_Q_and_width(heights, Q, width_list)
+# rectangles, yield_strength_comp, yield_strength_tens = cross_section_inputs()
+# centroid_y, I, height = centroid_and_secondmoment(rectangles)
+# tau, height, Q_val, b_val, heights, Q, width_list=shear_fos(1508/2, rectangles, centroid_y, I)
+# print(tau,height, Q_val,b_val)
+# print(width_list)
+# plot_Q_and_width(heights, Q, width_list)
