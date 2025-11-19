@@ -19,7 +19,7 @@ def cross_section_inputs():
     num_rectangles = int(input("Enter the number of rectangles in the cross-section: "))
     rectangles = []
     for i in range(num_rectangles):
-        print(f"\n--- Rectangle {i+1} ---")
+        print(f"\n--- Rectangle {i+1} ---") #sdfjsdf
         width = float(input(f"Enter the width of rectangle {i+1}: "))
         height = float(input(f"Enter the height of rectangle {i+1}: "))
         x_left = float(input(f"Enter the distance from the left edge for rectangle {i+1}: "))
