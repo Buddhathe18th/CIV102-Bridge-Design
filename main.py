@@ -3,13 +3,21 @@ from shear_helper import *
 from buckle_helper import *
 
 WEIGHT=452.2
-LENGTH=1200
+LENGTH=1250
 TARGET_FOS=2.0
 YIELD_STRENGTH_COMP=6  #MPa
 YIELD_STRENGTH_TENS=30  #MPa
 SHEAR_YIELD_STRENGTH=4  #MPa
 ELASTIC_MODULUS=4000  #MPa
 POISSON_RATIO=0.2  #unitless
+
+def area_used(rectangles):
+    total_area = 0
+    for rectangle in rectangles:
+        side= rectangle['width']  if rectangle['height']==1.27 else rectangle['height']
+        area = side*LENGTH
+        total_area += area
+    return total_area
 
 if __name__ == "__main__":
     rectangles = cross_section_inputs()
@@ -69,7 +77,8 @@ if __name__ == "__main__":
     min_ratio = min(ratios)
     min_index = ratios.index(min_ratio)
     
-    print("The maximum weight this design can carry is: " +str(WEIGHT*min_ratio)+" for index ",min_index)
-    print(fos,tau)
+    print(f"The maximum weight this design can carry is: {WEIGHT*min_ratio:.2f} for index {min_index}")
+
+    print(f"The area used in this design is: {area_used(rectangles)} mm^2")
 
 
