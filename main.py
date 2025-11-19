@@ -45,6 +45,15 @@ if __name__ == "__main__":
     buckling=buckle(ELASTIC_MODULUS,POISSON_RATIO,I,max_moment,max_shear_force*Q_val/(I*b_val))
     fos=fos+buckling
 
+    glue_fos=[]
+    glue=int(input("How many glue shear cases to evaluate?: "))
+    for i in range(glue):
+        height=float(input("Height at which to evaluate glue shear FOS: "))
+        glue_fos.append(glue_shear(rectangles,height,centroid_y,tau,max_shear_force,I))
+
+
+    fos=fos+glue_fos
+
     print(f"\n\n\n\n\nFor the composite cross-section:")
     print(f"Overall centroidal y-axis: {centroid_y:.2f}")
     print(f"Second moment of area (I): {I:.2f}")
@@ -52,6 +61,7 @@ if __name__ == "__main__":
     print("\n"*2+f"Minimum Factor of Safety in Compression over all load positions: {fos_comp_min}")
     print(f"Minimum Factor of Safety in Tension over all load positions: {fos_tens_min}")
     print(f"Minimum Factor of Safety in Shear over all load positions: {SHEAR_YIELD_STRENGTH/tau:.2f}")
+    print(f"Minimum Factor of Safety in Glue Shear: {min(glue_fos):.2f}")
 
     
     print(f"Minimum Factor of Safety in Buckling over all load positions: {min(buckling)}")

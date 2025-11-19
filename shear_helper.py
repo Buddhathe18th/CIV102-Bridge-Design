@@ -64,6 +64,27 @@ def centroid_up_to_height(rectangles, h):
     centroid_y = area_moment_sum / total_area
     return centroid_y
 
+def glue_shear(rectangles,height,centroid_y,tau_max,current_shear,I):
+    Q=area_up_to_height(rectangles, height)*abs(centroid_up_to_height(rectangles, height) - centroid_y)
+    total_width1 = 0
+    total_width2 = 0
+    for rect in rectangles:
+        if rect['y_bottom'] <= height < rect['y_bottom'] + rect['height']:
+            total_width1 += rect['width']
+
+    for rect in rectangles:
+        if rect['y_bottom'] <= height-1 < rect['y_bottom'] + rect['height']:
+            total_width2 += rect['width']
+
+    total_width=min(total_width1,total_width2)
+
+    max_shear=tau_max*I*total_width/Q
+    print(f"Glue Shear at height {height}: {Q:.2f} {I:.2f} {total_width:.2f} {current_shear:.2f}")
+    return max_shear/current_shear
+
+
+
+
 
 def shear_fos(maximum_shear_force, rectangles, centroid_y, I):
     min_y = min(rect['y_bottom'] for rect in rectangles)
