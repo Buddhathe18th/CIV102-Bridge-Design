@@ -2,3 +2,5 @@ __pycache__
 .venv
 data.txt
 Cross-sections
+moments.png
+shear_forces.png
