@@ -1,8 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_beam_and_load_inputs(weight,length,shift):
+def get_beam_and_load_inputs_2(weight,length,shift):
     point_loads = [(weight/(3.35*2),shift),(weight/(3.35*2),176+shift),(weight/(3.35*2),340+shift),(weight/(3.35*2),516+shift),(weight*1.35/(3.35*2),680+shift),(weight*1.35/(3.35*2),856+shift)]
+    
+    # TODO: Self Weight
+    udl = []
+    # num_udl = int(input("Enter the number of uniformly distributed loads: "))
+    # for i in range(num_udl):
+    #     magnitude = float(input(f"Enter the magnitude of udl {i+1} (use negative for upward force): "))
+    #     startloc = float(input(f"Enter the start location of udl {i+1} from the left end: "))
+    #     endloc = float(input(f"Enter the end location of udl {i+1} from the left end: "))
+    #     udl.append((magnitude, startloc, endloc))
+       
+    return length, point_loads, udl
+
+def get_beam_and_load_inputs_1(weight,length,shift):
+    point_loads = [(weight/(6),shift),(weight/(6),176+shift),(weight/(6),340+shift),(weight/(6),516+shift),(weight/(6),680+shift),(weight/6,856+shift)]
     
     # TODO: Self Weight
     udl = []
@@ -84,7 +98,7 @@ def calculate_reactions(length, point_loads, udl):
     return leftreaction, rightreaction
 
 def shear_force(length, point_loads, udl, leftreaction):
-    x = np.linspace(0, length, 1000)
+    x = np.linspace(0, length, 1250)
     V = np.zeros_like(x)
    
     point_loads_with_reactions = [(-leftreaction, 0)] + point_loads
@@ -174,10 +188,9 @@ def plot_cross_section(rectangles):
     plt.title('Cross Section')
     plt.show()
 
-# def shear_fos()
-
-def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens, I, c, height):    
-    length, point_loads, udl = get_beam_and_load_inputs(weight, length, shift)
+#
+def main2(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens, I, c, height):    
+    length, point_loads, udl = get_beam_and_load_inputs_2(weight, length, shift)
    
     leftreaction, rightreaction = calculate_reactions(length, point_loads, udl)
     x_shear, V = shear_force(length, point_loads, udl, leftreaction)
@@ -185,8 +198,8 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
    
     
     max_shear_force = max(abs(V))
-    max_abs_moment_pos = M[M > 0].max() if np.any(M > 0) else None
-    max_abs_moment_neg = M[M < 0].max() if np.any(M < 0) else None
+    max_abs_moment_pos = M[M > 0].max() if np.any(M > 0) else 0
+    max_abs_moment_neg = M[M < 0].max() if np.any(M < 0) else 0
 
 
 
@@ -206,6 +219,38 @@ def main(weight, length, shift,rectangles, yield_strength_comp, yield_strength_t
     # Plot diagrams
     # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
     # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
+
+def main1(weight, length, shift,rectangles, yield_strength_comp, yield_strength_tens, I, c, height):    
+    length, point_loads, udl = get_beam_and_load_inputs_1(weight, length, shift)
+   
+    leftreaction, rightreaction = calculate_reactions(length, point_loads, udl)
+    x_shear, V = shear_force(length, point_loads, udl, leftreaction)
+    x_moment, M = bending_moment(x_shear, V)
+   
+    
+    max_shear_force = max(abs(V))
+    max_abs_moment_pos = M[M > 0].max() if np.any(M > 0) else 0
+    max_abs_moment_neg = M[M < 0].max() if np.any(M < 0) else 0
+
+
+
+    fos_c_pos, fos_t_pos = factor_of_safety(abs(max_abs_moment_pos), I, height, c, yield_strength_comp, yield_strength_tens)
+    fos_c_neg, fos_t_neg = factor_of_safety(abs(max_abs_moment_neg), I, height, c, yield_strength_comp, yield_strength_tens)
+
+   
+    # print("\n--- Analysis Results ---")
+    # print(f"Reaction force at the left support: {leftreaction:.2f}")
+    # print(f"Reaction force at the right support: {rightreaction:.2f}")
+    
+    # print(f"Maximum absolute bending moment: {max(max_abs_moment_pos,max_abs_moment_neg):.2f}")
+    # print(f"Factor of Safety for Compression: {min(fos_c_pos,fos_c_neg):.2f}")
+    # print(f"Factor of Safety for Tension: {min(fos_t_pos,fos_t_neg):.2f}")
+   
+    return f"{shift}\t{leftreaction:.2f}\t{rightreaction:.2f}\t{min(fos_c_pos,fos_c_neg):.2f}\t{min(fos_t_pos,fos_t_neg):.2f}\n",max_shear_force,max(max_abs_moment_pos,max_abs_moment_neg)
+    # Plot diagrams
+    # plot_diagram(x_shear, V, "Shear Force Diagram", "Shear Force")
+    # plot_diagram(x_moment, M, "Bending Moment Diagram", "Bending Moment")
+
 
 if __name__ == "__main__":
     print("Please note that it is crucial to enter all lengths in milimeters (mm) and all force magnitudes in Newtons to ensure correct calculation.")
