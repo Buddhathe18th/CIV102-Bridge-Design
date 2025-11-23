@@ -2,9 +2,11 @@ import flexural_helper
 import matplotlib.pyplot as plt
 import numpy as np
 
-# --------- Constants ---------
-WEIGHT = 400
+# Load Case constraints
+WEIGHT = 452
 LENGTH = 1200
+
+# General Constants
 TARGET_FOS = 2.0
 YIELD_STRENGTH_COMP = 6      # MPa
 YIELD_STRENGTH_TENS = 30     # MPa
@@ -12,37 +14,38 @@ SHEAR_YIELD_STRENGTH = 4     # MPa
 ELASTIC_MODULUS = 4000       # MPa
 POISSON_RATIO = 0.2          # unitless
 
+# FOS from main.py calculations
 MIN_SAFETY_FACTOR = 2.49
 
-# --------- Beam and Load Generation ---------
+# Getting load case point loads
 def get_beam_and_load_inputs(weight, length, shift):
-    single_load = weight / (3 * 2)
-    positions = [shift, 176 + shift, 340 + shift, 516 + shift, 680 + shift, 856 + shift]
-    point_loads = [(single_load, pos) for pos in positions]
-    udl = []  # Add UDLs here if needed
+    point_loads = [(weight/(3.35*2),shift),(weight/(3.35*2),176+shift),(weight/(3.35*2),340+shift),(weight/(3.35*2),516+shift),(weight*1.35/(3.35*2),680+shift),(weight*1.35/(3.35*2),856+shift)]
+    udl = []  # UDLS can be added here if needed
     return length, point_loads, udl
 
+# Calculate shear force at each position
 def shear_force(length, point_loads, udl=[], n_points=LENGTH):
-    """Calculate shear force at each position for given point and distributed loads."""
     x = np.linspace(0, length, n_points)
     V = np.zeros_like(x)
 
-    # Filter loads within span
+    # Ignore loads outside beam length, when simulating train rolling onto/off beam
     filtered_loads = [(f, d) for f, d in point_loads if 0 <= d <= length]
 
-    # Calculate reactions (simply supported beam)
+    # Calulate reaction forces from moments and vertical forces
     total_force = sum(f for f, _ in filtered_loads)
     moment_sum = sum(f * d for f, d in filtered_loads)
     left_reaction = (total_force * length - moment_sum) / length
-    # Don't need right_reaction for shear (except for completeness)
 
     for i, xi in enumerate(x):
+        # Initialize shear with left reaction
         shear = left_reaction
-        # Subtract point loads to the left
+
+        # For each point load to the left of xi, subtract its force
         for force, pos in filtered_loads:
             if xi >= pos:
                 shear -= force
-        # Subtract distributed load to the left
+
+        # Subtract UDLS to the left
         for magnitude, start, end in udl:
             if xi >= start:
                 effective_end = min(xi, end)
@@ -50,53 +53,49 @@ def shear_force(length, point_loads, udl=[], n_points=LENGTH):
         V[i] = shear
     return x, V
 
+# Calculate bending moment at each position
 def bending_moment(x, V):
     M = np.zeros_like(x)
     for i in range(1, len(x)):
-        M[i] = M[i-1] + np.trapz(V[i-1:i+1], x[i-1:i+1])
+        # Since every pieces of the shear diagram is linear between points, we can use trapezoidal integration to find moment
+        M[i] = M[i-1] + np.trapezoid(V[i-1:i+1], x[i-1:i+1])
     return x, M
 
-# --------- Envelope Arrays ---------
+# Envelope variables
 n_points = LENGTH
 max_shear = np.zeros(n_points)
 max_moment_pos = np.zeros(n_points)
 max_moment_neg = np.zeros(n_points)
 all_shears = []
 
-# --------- Envelope Calculation ---------
+# Calculate envelopes over all shifts, considering only when the entire train is on the beam
 for shift in range(LENGTH-855):
     length, point_loads, udl = get_beam_and_load_inputs(WEIGHT, LENGTH, shift)
     x_shear, V = shear_force(length, point_loads, udl, n_points=n_points)
     x_moment, M = bending_moment(x_shear, V)
 
-    # Absolute envelope for shear force
+    # Envelope for shear force
     for j in range(len(V)):
         if abs(V[j]) > abs(max_shear[j]):
             max_shear[j] = abs(V[j])
-    # Positive envelope for moment
+    
+    # Envelope for moment
     for j in range(len(M)):
         if M[j] > max_moment_pos[j]:
             max_moment_pos[j] = M[j]
         if M[j] < max_moment_neg[j]:
             max_moment_neg[j] = M[j]
 
-    all_shears.append(V)
-
-# --------- Plotting ---------
+# Plotting results
 plt.figure()
 plt.plot(x_shear, [moment*MIN_SAFETY_FACTOR for moment in max_moment_pos], label='Max Positive Moment')
-# plt.plot(x_shear, max_moment_neg, label='Max Negative Moment')
 plt.xlabel('Beam Position')
 plt.ylabel('Value')
 plt.legend()
 plt.savefig("moments.png")
-
 plt.show()
 
-# Overlay all individual shear curves (faint gray, for reference)
 plt.figure()
-# for V in all_shears:
-#     plt.plot(x_shear, V, color='gray', alpha=0.2)
 plt.plot([abs(shear)*MIN_SAFETY_FACTOR for shear in max_shear], label='Enveloped Shear', color='red', linewidth=2)
 plt.xlabel('Beam Position')
 plt.ylabel('Shear Force')
@@ -104,5 +103,6 @@ plt.legend()
 plt.savefig("shear_forces.png")
 plt.show()
 
+# Output maximum values
 print("Maximum Moment:", max(max_moment_pos))
 print("Maximum Shear (absolute):", max(abs(x) for x in max_shear))
