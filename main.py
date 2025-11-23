@@ -105,3 +105,4 @@ if __name__ == "__main__":
 
     print(f"The area used in this design is: {area_used(rectangles)} mm^2")
 
+    print(fos)

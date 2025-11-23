@@ -1,5 +1,6 @@
 import math
 
+# Consider all buckling cases
 def buckle(E,poisson,I,current_moment,coefficient):
     case=input("case: ")
     fos=[]
@@ -26,4 +27,3 @@ def buckle(E,poisson,I,current_moment,coefficient):
             fos.append(tau/coefficient)
         case=input("case: ")
     return fos
-# buckle(4000,0.2,587*10**3)
